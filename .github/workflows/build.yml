@@ -26,12 +26,12 @@ jobs:
       - name: Upload app artifacts Demo Official Firmware
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.event.repository.name }}-official-${{ steps.build-demo.outputs.suffix }}
+          name: ${{ github.event.repository.name }}-official
           path: ${{ steps.build-demo.outputs.fap-artifacts }}
       - name: Upload app artifacts Demo Momentum
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.event.repository.name }}-${{ steps.build-demo-momentum.outputs.suffix }}
+          name: ${{ github.event.repository.name }}-momentum
           path: ${{ steps.build-demo-momentum.outputs.fap-artifacts }}
       - name: Release
         uses: softprops/action-gh-release@v1
