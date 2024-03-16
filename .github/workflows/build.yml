@@ -19,7 +19,7 @@ jobs:
         id: build-demo-momentum
         with:
           # Set to 'release' to build for latest published release version
-          sdk-channel: release-momentum
+          sdk-channel: release
           sdk-url: https://github.com/Next-Flip/Momentum-Firmware/releases/download/mntm-001/flipper-z-f7-sdk-mntm-001.zip
           sdk-hw-target: f7
           app-dir: ./
