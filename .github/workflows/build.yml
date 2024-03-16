@@ -1,0 +1,43 @@
+name: "FAP: Build and lint"
+on: [push, pull_request]
+jobs:
+  ufbt-build-action:
+    runs-on: ubuntu-latest
+    name: 'ufbt: Build'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build with ufbt Official FW
+        uses: flipperdevices/flipperzero-ufbt-action@v0.1.3
+        id: build-demo
+        with:
+          # Set to 'release' to build for latest published release version
+          sdk-channel: release
+          app-dir: ./
+      - name: Build with ufbt Momentum FW
+        uses: flipperdevices/flipperzero-ufbt-action@v0.1.3
+        id: build-demo-momentum
+        with:
+          # Set to 'release' to build for latest published release version
+          sdk-channel: release-momentum
+          sdk-url: https://github.com/Next-Flip/Momentum-Firmware/releases/download/mntm-001/flipper-z-f7-sdk-mntm-001.zip
+          sdk-hw-target: f7
+          app-dir: ./
+      
+      - name: Upload app artifacts Demo Official Firmware
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.repository.name }}-official-${{ steps.build-demo.outputs.suffix }}
+          path: ${{ steps.build-demo.outputs.fap-artifacts }}
+      - name: Upload app artifacts Demo Momentum
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.repository.name }}-${{ steps.build-demo-momentum.outputs.suffix }}
+          path: ${{ steps.build-demo-momentum.outputs.fap-artifacts }}
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            ${{ steps.build-demo.outputs.fap-artifacts }}
+            ${{ steps.build-demo-momentum.outputs.fap-artifacts }}
