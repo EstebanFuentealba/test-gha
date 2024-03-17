@@ -23,6 +23,7 @@ jobs:
         with:
           sdk-index-url: ${{ matrix.sdk-index-url }}
           sdk-url: ${{ matrix.sdk-url }}
+          sdk-hw-target: ${{ matrix.sdk-hw-target }}
       - name: Upload app artifacts
         uses: actions/upload-artifact@v3
         with:
