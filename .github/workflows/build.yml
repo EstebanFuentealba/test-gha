@@ -6,8 +6,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: Official firmware
-            sdk-channel: release
+          # - name: Official firmware
+          #   sdk-channel: release
           - name: Momentum firmware
             # example URL, replace with a valid one
             # you can also use other modes for specifying SDK sources
