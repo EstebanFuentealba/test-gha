@@ -51,6 +51,6 @@ jobs:
         with:
           token: ${{ secrets.TOKEN }}
           files: |
-            ${{ steps.build-demo.outputs.fap-artifacts }}
-            ${{ steps.build-demo-momentum.outputs.fap-artifacts }}
-            ${{ steps.build-demo-unlshd.outputs.fap-artifacts }}
+            ${{ github.event.repository.name }}-official
+            ${{ github.event.repository.name }}-momentum
+            ${{ github.event.repository.name }}-unlshd
