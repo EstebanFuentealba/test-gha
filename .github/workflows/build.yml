@@ -3,54 +3,82 @@ on: [push, pull_request]
 jobs:
   ufbt-build-action:
     runs-on: ubuntu-latest
-    name: 'ufbt: Build'
+    strategy:
+      matrix:
+        include:
+          - name: Official firmware
+            sdk-channel: release
+          - name: Momentum firmware
+            # example URL, replace with a valid one
+            # you can also use other modes for specifying SDK sources
+            sdk-url: https://github.com/Next-Flip/Momentum-Firmware/releases/download/mntm-001/flipper-z-f7-sdk-mntm-001.zip
+            sdk-hw-target: f7
+            sdk-channel: release
+    name: 'ufbt: Build for ${{ matrix.name }}'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Build with ufbt Official FW
-        uses: flipperdevices/flipperzero-ufbt-action@v0.1.3
-        id: build-demo
+      - name: Build with ufbt
+        uses: flipperdevices/flipperzero-ufbt-action@v0.1
+        id: build-app
         with:
-          # Set to 'release' to build for latest published release version
-          sdk-channel: release
-          app-dir: ./
-      - name: Build with ufbt Momentum FW
-        uses: flipperdevices/flipperzero-ufbt-action@v0.1.3
-        id: build-demo-momentum
-        with:
-          # Set to 'release' to build for latest published release version
-          sdk-url: https://github.com/Next-Flip/Momentum-Firmware/releases/download/mntm-001/flipper-z-f7-sdk-mntm-001.zip
-          sdk-hw-target: f7
-          app-dir: ./
-      - name: Build with ufbt Unleashed FW
-        uses: flipperdevices/flipperzero-ufbt-action@v0.1.3
-        id: build-demo-unlshd
-        with:
-          # Set to 'release' to build for latest published release version
-          sdk-url: https://github.com/DarkFlippers/unleashed-firmware/releases/download/unlshd-071/flipper-z-f7-sdk-unlshd-071.zip
-          sdk-hw-target: f7
-          app-dir: ./
-      - name: Upload app artifacts Demo Official Firmware
+          sdk-channel: ${{ matrix.sdk-channel }}
+          sdk-index-url: ${{ matrix.sdk-index-url }}
+      - name: Upload app artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.event.repository.name }}-official
-          path: ${{ steps.build-demo.outputs.fap-artifacts }}
-      - name: Upload app artifacts Demo Momentum
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ github.event.repository.name }}-momentum
-          path: ${{ steps.build-demo-momentum.outputs.fap-artifacts }}
-      - name: Upload app artifacts Demo Unleashed
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ github.event.repository.name }}-unlshd
-          path: ${{ steps.build-demo-unlshd.outputs.fap-artifacts }}
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          token: ${{ secrets.TOKEN }}
-          files: |
-            ${{ github.event.repository.name }}-official
-            ${{ github.event.repository.name }}-momentum
-            ${{ github.event.repository.name }}-unlshd
+          name: ${{ github.event.repository.name }}-${{ steps.build-app.outputs.suffix }}
+          path: ${{ steps.build-app.outputs.fap-artifacts }}
+  # ufbt-build-action:
+  #   runs-on: ubuntu-latest
+  #   name: 'ufbt: Build'
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  #     - name: Build with ufbt Official FW
+  #       uses: flipperdevices/flipperzero-ufbt-action@v0.1.3
+  #       id: build-demo
+  #       with:
+  #         # Set to 'release' to build for latest published release version
+  #         sdk-channel: release
+  #         app-dir: ./
+  #     - name: Build with ufbt Momentum FW
+  #       uses: flipperdevices/flipperzero-ufbt-action@v0.1.3
+  #       id: build-demo-momentum
+  #       with:
+  #         # Set to 'release' to build for latest published release version
+  #         sdk-url: https://github.com/Next-Flip/Momentum-Firmware/releases/download/mntm-001/flipper-z-f7-sdk-mntm-001.zip
+  #         sdk-hw-target: f7
+  #         app-dir: ./
+  #     - name: Build with ufbt Unleashed FW
+  #       uses: flipperdevices/flipperzero-ufbt-action@v0.1.3
+  #       id: build-demo-unlshd
+  #       with:
+  #         # Set to 'release' to build for latest published release version
+  #         sdk-url: https://github.com/DarkFlippers/unleashed-firmware/releases/download/unlshd-071/flipper-z-f7-sdk-unlshd-071.zip
+  #         sdk-hw-target: f7
+  #         app-dir: ./
+  #     - name: Upload app artifacts Demo Official Firmware
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: ${{ github.event.repository.name }}-official
+  #         path: ${{ steps.build-demo.outputs.fap-artifacts }}
+  #     - name: Upload app artifacts Demo Momentum
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: ${{ github.event.repository.name }}-momentum
+  #         path: ${{ steps.build-demo-momentum.outputs.fap-artifacts }}
+  #     - name: Upload app artifacts Demo Unleashed
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: ${{ github.event.repository.name }}-unlshd
+  #         path: ${{ steps.build-demo-unlshd.outputs.fap-artifacts }}
+      # - name: Release
+      #   uses: softprops/action-gh-release@v1
+      #   if: startsWith(github.ref, 'refs/tags/')
+      #   with:
+      #     token: ${{ secrets.TOKEN }}
+      #     files: |
+      #       ${{ github.event.repository.name }}-official
+      #       ${{ github.event.repository.name }}-momentum
+      #       ${{ github.event.repository.name }}-unlshd
