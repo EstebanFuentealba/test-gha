@@ -13,7 +13,6 @@ jobs:
             # you can also use other modes for specifying SDK sources
             sdk-url: https://github.com/Next-Flip/Momentum-Firmware/releases/download/mntm-001/flipper-z-f7-sdk-mntm-001.zip
             sdk-hw-target: f7
-            sdk-channel: release
     name: 'ufbt: Build for ${{ matrix.name }}'
     steps:
       - name: Checkout
@@ -22,9 +21,10 @@ jobs:
         uses: flipperdevices/flipperzero-ufbt-action@v0.1
         id: build-app
         with:
-          sdk-index-url: ${{ matrix.sdk-index-url }}
+          # sdk-index-url: ${{ matrix.sdk-index-url }}
           sdk-url: ${{ matrix.sdk-url }}
           sdk-hw-target: ${{ matrix.sdk-hw-target }}
+          app-dir: ./
       - name: Upload app artifacts
         uses: actions/upload-artifact@v3
         with:
